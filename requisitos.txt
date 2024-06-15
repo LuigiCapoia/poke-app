@@ -13,3 +13,14 @@ Tendo escolhido uma API para fornecer os dados para seu trabalho, você deverá 
 
 11- API de Pokemon - https://pokeapi.co/
 12- Pretendemos utilizar a streams para trazer os dados em um json e filtrar por tipo
+
+
+
+paginas:
+http://localhost:3000/register.html
+http://localhost:3000/login.html
+
+
+oq falta :
+1- deletar usuario 
+2- editar usuario
