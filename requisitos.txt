@@ -1,0 +1,15 @@
+Tendo escolhido uma API para fornecer os dados para seu trabalho, você deverá desenvolver uma aplicação utilizando Nestjs que atenda aos seguintes requisitos:
+
+1- Crie os schemas/models necessários
+2- Implementos todos os métodos de CRUD
+3- Todas as controllers e rotas devem ter tratamento de exceções
+4- Sua aplicação deve ter cadastro de usuário e autenticação utilizando JWT
+5- Todos os dados trafegados devem ser validados com Validators ou Zod
+6- As rotas internas da sua aplicação devem ter um @guard implementado, somente usuários cadastrados e autenticados podem ter acesso a elas
+7- Implemente interceptadores para registrar o tempo de resposta da sua aplicação
+8- Implemente interceptadores para logs gerais e de erros da sua aplicação
+9- Salve os logs de erros em uma tabela em sua base de dados
+10- Implemente pelo menos 1 Decorators (Opcional)
+
+11- API de Pokemon - https://pokeapi.co/
+12- Pretendemos utilizar a streams para trazer os dados em um json e filtrar por tipo
