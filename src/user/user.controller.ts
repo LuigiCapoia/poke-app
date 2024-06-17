@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Param, UseGuards, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { User } from './schemas/user.schema'; // Certifique-se de importar o schema do usuário
 
 @Controller('user')
 export class UserController {
@@ -13,8 +14,13 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return this.userService.deleteById(id);
+  @Delete(':username')
+  async delete(@Param('username') username: string) {
+    const user: User = await this.userService.findOne(username);
+    if (user) {
+      return this.userService.deleteById(user._id.toString()); // Convertendo _id para string
+    } else {
+      throw new NotFoundException(`User with username '${username}' not found`);
+    }
   }
 }

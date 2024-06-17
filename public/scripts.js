@@ -69,19 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             localStorage.setItem('token', data.access_token);
+            localStorage.setItem('username', loginData.username);
             messageDiv.innerText = 'Login realizado com sucesso!';
             loginForm.reset();
-            showLoggedInMessage(data.access_token);
+            window.location.href = 'dashboard.html';
         })
         .catch(error => {
             console.error('Erro ao fazer login:', error);
             messageDiv.innerText = 'Erro ao fazer login. Verifique o console para mais detalhes.';
         });
-    }
-
-    function showLoggedInMessage(token) {
-        const loggedInMessage = document.createElement('p');
-        loggedInMessage.textContent = `Logado com sucesso! Seu token é: ${token}`;
-        messageDiv.appendChild(loggedInMessage);
     }
 });
