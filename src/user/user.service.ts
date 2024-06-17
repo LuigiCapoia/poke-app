@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -29,5 +30,14 @@ export class UserService {
     this.logger.log(`User deleted with id: ${id}`);
     return { deleted: true };
   }
+
+  async update(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateUserDto, { new: true }).exec();
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID '${userId}' not found`);
+    }
+    return updatedUser;
+  }
+
 
 }
