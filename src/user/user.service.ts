@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async findOne(username: string): Promise<User | undefined> {
@@ -18,11 +19,14 @@ export class UserService {
     return newUser.save();
   }
 
-  async delete(username: string): Promise<{ deleted: boolean; message?: string }> {
-    const result = await this.userModel.deleteOne({ username }).exec();
+  async deleteById(id: string): Promise<{ deleted: boolean; message?: string }> {
+    this.logger.log(`Deleting user with id: ${id}`);
+    const result = await this.userModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {
-      throw new NotFoundException(`User with username '${username}' not found`);
+      this.logger.warn(`User not found with id: ${id}`);
+      throw new NotFoundException(`User with id '${id}' not found`);
     }
+    this.logger.log(`User deleted with id: ${id}`);
     return { deleted: true };
   }
 
