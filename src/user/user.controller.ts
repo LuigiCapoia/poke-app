@@ -12,9 +12,9 @@ export class UserController {
     return this.userService.create(createUserDto.username, createUserDto.password);
   }
 
-  @UseGuards(JwtAuthGuard) // Proteja a rota com seu JwtAuthGuard
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return this.userService.delete(id);
+  @UseGuards(JwtAuthGuard)
+  @Delete(':username')
+  async delete(@Param('username') username: string) {
+    return this.userService.delete(username);
   }
 }

@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async findOne(username: string): Promise<User | undefined> {
     return this.userModel.findOne({ username }).exec();
@@ -18,16 +18,12 @@ export class UserService {
     return newUser.save();
   }
 
-  async findById(id: string): Promise<User | undefined> {
-    return this.userModel.findById(id).exec();
-  }
-
-  async delete(id: string): Promise<User> {
-    const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
-    if (!deletedUser) {
-      throw new NotFoundException(`User with id ${id} not found`);
+  async delete(username: string): Promise<{ deleted: boolean; message?: string }> {
+    const result = await this.userModel.deleteOne({ username }).exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException(`User with username '${username}' not found`);
     }
-    return deletedUser;
+    return { deleted: true };
   }
 
 }
