@@ -9,15 +9,24 @@
 <body>
     <div class="container">
         <h1>Dashboard</h1>
-        
+
         <form id="updateForm">
             <label for="newUsername">Novo Nome de Usuário:</label>
             <input type="text" id="newUsername" name="newUsername" required>
             <br>
             <button type="submit">Atualizar Usuário</button>
         </form>
-
         <button id="deleteButton">Excluir Usuário</button>
+
+        <h2 class="timePokemonTitle">Time Pokémon</h2>
+
+        <div id="pokemonCardsContainer"></div>
+
+        <select id="pokemonSelect" multiple> </select>
+        <button id="addPokemonCard">Adicionar Pokémon</button>
+        <button id="savePokemonButton">Salvar Pokémon</button>
+
+        
         
         <div id="message"></div>
     </div>
