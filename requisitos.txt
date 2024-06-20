@@ -21,8 +21,6 @@ http://localhost:3000/register.html
 http://localhost:3000/login.html
 
 
-oq falta :
-2- editar usuario
 
 uteis:
 https://jwt.io/
