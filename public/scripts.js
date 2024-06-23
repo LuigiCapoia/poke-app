@@ -15,8 +15,10 @@ function setupEventListeners() {
     setupLoginForm(messageDiv);
     setupUpdateForm(messageDiv);
     setupDeleteButton(messageDiv);
-    setupSavePokemonButton();
+    setupSavePokemonButton(messageDiv);
     setupAddPokemonCardButton(messageDiv);
+    setupDeleteLastPokemonCardButton(messageDiv)
+    setupDeleteAllPokemonsButton(messageDiv);
 }
 
 function setupRegisterForm(messageDiv) {
@@ -82,13 +84,13 @@ function setupDeleteButton(messageDiv) {
     }
 }
 
-function setupSavePokemonButton() {
-    const savePokemonButton = document.getElementById('savePokemonSelection');
+function setupSavePokemonButton(messageDiv) {
+    const savePokemonButton = document.getElementById('savePokemonButton');
     if (savePokemonButton) {
         savePokemonButton.addEventListener('click', function() {
             const pokemonSelect = document.getElementById('pokemonSelect');
             const selectedOptions = Array.from(pokemonSelect.selectedOptions).map(option => option.value);
-            saveUserPokemons(selectedOptions);
+            saveUserPokemons(selectedOptions, messageDiv);
         });
     }
 }
@@ -113,7 +115,41 @@ function setupAddPokemonCardButton(messageDiv) {
         });
     }
 }
+function setupDeleteLastPokemonCardButton() {
+    const deleteCardButton = document.getElementById('deleteLastPokemonCardButton');
+    if (deleteCardButton) {
+        deleteCardButton.addEventListener('click', function() {
+            deleteLastPokemonCard();
+        });
+    }
+}
 
+function setupDeleteAllPokemonsButton(messageDiv) {
+    const deleteAllPokemonsButton = document.getElementById('deleteAllPokemonsButton');
+    if (deleteAllPokemonsButton) {
+        deleteAllPokemonsButton.addEventListener('click', function() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            if (token && username) {
+                fetch(`http://localhost:3000/user/${username}/pokemons`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.ok ? response.json() : Promise.reject('Erro ao deletar todos os Pokémons'))
+                .then(data => {
+                    messageDiv.innerText = 'Todos os Pokémons foram removidos com sucesso.';
+                })
+                .catch(error => {
+                    messageDiv.innerText = 'Erro ao deletar todos os Pokémons. Verifique o console para mais detalhes.';
+                });
+            } else {
+                messageDiv.innerText = 'Usuário não está logado.';
+            }
+        });
+    }
+}
 function registerUser(userData, messageDiv, registerForm) {
     fetch('http://localhost:3000/user', {
         method: 'POST',
@@ -212,7 +248,7 @@ function populatePokemonSelect(pokemons) {
     });
 }
 
-function saveUserPokemons(pokemonSelection) {
+function saveUserPokemons(pokemonSelection, messageDiv) {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     if (token && username) {
@@ -228,14 +264,14 @@ function saveUserPokemons(pokemonSelection) {
         .then(data => console.log('Pokémons salvos com sucesso!'))
         .catch(error => console.error('Erro ao salvar Pokémons:', error));
     } else {
-        console.error('Usuário não está logado.');
+        messageDiv.innerText = 'Usuário não está logado.';
     }
 }
 
 const addedPokemons = [];
 function addPokemonCard(pokemonName, messageDiv) {
     const apiUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`;
-
+    
     if (addedPokemons.includes(pokemonName.toLowerCase())) {
         messageDiv.innerText = 'Este Pokémon já foi adicionado.';
         return; 
@@ -244,9 +280,6 @@ function addPokemonCard(pokemonName, messageDiv) {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            messageDiv.innerText = 'Usuário excluído com sucesso!';
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
             const cardContainer = document.getElementById('pokemonCardsContainer');
             const card = document.createElement('div');
             card.className = 'pokemon-card'; 
@@ -259,8 +292,12 @@ function addPokemonCard(pokemonName, messageDiv) {
             cardContainer.appendChild(card);
             addedPokemons.push(pokemonName.toLowerCase());
         })
-        .catch(error => {
-            console.error('Erro ao excluir usuário:', error);
-            messageDiv.innerText = 'Erro ao excluir usuário. Verifique o console para mais detalhes.';
-        });
+        .catch(error => console.error('Erro ao buscar dados do Pokémon:', error));
+}
+function deleteLastPokemonCard() {
+    const cardContainer = document.getElementById('pokemonCardsContainer');
+    if (cardContainer.lastElementChild) {
+        cardContainer.removeChild(cardContainer.lastElementChild);
+        addedPokemons.pop();
     }
+}

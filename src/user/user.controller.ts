@@ -59,11 +59,8 @@ export class UserController {
     return this.userService.addPokemonToUser(userId, pokemonId);
   }
 
-  @Delete(':userId/pokemons/:pokemonId')
-  async removePokemon(
-    @Param('userId') userId: string,
-    @Param('pokemonId') pokemonId: Types.ObjectId,
-  ) {
-    return this.userService.removePokemonFromUser(userId, pokemonId);
+  @Delete(':userId/pokemons')
+  async deleteAllPokemons(@Param('userId') userId: string) {
+    return this.userService.deleteAllPokemonsFromUser(userId);
   }
 }
