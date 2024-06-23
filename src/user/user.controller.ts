@@ -51,7 +51,7 @@ export class UserController {
       throw new NotFoundException(`User with username '${username}' not found`);
     }
   }
-  @Post(':userId/pokemons')
+  @Patch(':userId/pokemons')
   async addPokemon(
     @Param('userId') userId: string,
     @Body('pokemonId') pokemonId: Types.ObjectId,
