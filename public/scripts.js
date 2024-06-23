@@ -216,7 +216,7 @@ function saveUserPokemons(pokemonSelection) {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     if (token && username) {
-        fetch(`http://localhost:3000/user/${username}/pokemons`, {
+        fetch(`https://localhost:3000/user/${username}/pokemons`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -242,19 +242,20 @@ function addPokemonCard(pokemonName, messageDiv) {
     }
 
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao buscar Pokémon');
+            }
+            return response.json();
+        })
         .then(data => {
-            const cardContainer = document.getElementById('pokemonCardsContainer');
-            const card = document.createElement('div');
-            card.className = 'pokemon-card'; 
-
-            card.innerHTML = `
-                <h3>${pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1)}</h3>
-                <img src="${data.sprites.front_default}" alt="${pokemonName}" />
-            `;
-
-            cardContainer.appendChild(card);
+            const pokemonCard = createPokemonCard(data);
+            const pokemonCardsContainer = document.getElementById('pokemonCardsContainer');
+            pokemonCardsContainer.appendChild(pokemonCard);
             addedPokemons.push(pokemonName.toLowerCase());
         })
-        .catch(error => console.error('Erro ao buscar dados do Pokémon:', error));
+        .catch(error => {
+            console.error('Erro ao buscar Pokémon:', error);
+            messageDiv.innerText = 'Erro ao buscar Pokémon.';
+        });
 }
