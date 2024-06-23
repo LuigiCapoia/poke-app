@@ -235,27 +235,32 @@ function saveUserPokemons(pokemonSelection) {
 const addedPokemons = [];
 function addPokemonCard(pokemonName, messageDiv) {
     const apiUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`;
-    
+
     if (addedPokemons.includes(pokemonName.toLowerCase())) {
         messageDiv.innerText = 'Este Pokémon já foi adicionado.';
         return; 
     }
 
     fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Falha ao buscar Pokémon');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            const pokemonCard = createPokemonCard(data);
-            const pokemonCardsContainer = document.getElementById('pokemonCardsContainer');
-            pokemonCardsContainer.appendChild(pokemonCard);
+            messageDiv.innerText = 'Usuário excluído com sucesso!';
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            const cardContainer = document.getElementById('pokemonCardsContainer');
+            const card = document.createElement('div');
+            card.className = 'pokemon-card'; 
+
+            card.innerHTML = `
+                <h3>${pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1)}</h3>
+                <img src="${data.sprites.front_default}" alt="${pokemonName}" />
+            `;
+
+            cardContainer.appendChild(card);
             addedPokemons.push(pokemonName.toLowerCase());
         })
         .catch(error => {
-            console.error('Erro ao buscar Pokémon:', error);
-            messageDiv.innerText = 'Erro ao buscar Pokémon.';
+            console.error('Erro ao excluir usuário:', error);
+            messageDiv.innerText = 'Erro ao excluir usuário. Verifique o console para mais detalhes.';
         });
-}
+    }
