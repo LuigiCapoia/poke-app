@@ -15,7 +15,7 @@ function setupEventListeners() {
     setupLoginForm(messageDiv);
     setupUpdateForm(messageDiv);
     setupDeleteButton(messageDiv);
-    setupSavePokemonButton(messageDiv);
+    setupSavePokemonButton(messageDiv, addedPokemons);
     setupAddPokemonCardButton(messageDiv);
     setupDeleteLastPokemonCardButton(messageDiv)
     setupDeleteAllPokemonsButton(messageDiv);
@@ -84,13 +84,15 @@ function setupDeleteButton(messageDiv) {
     }
 }
 
-function setupSavePokemonButton(messageDiv) {
+function setupSavePokemonButton(messageDiv, addedPokemons) {
     const savePokemonButton = document.getElementById('savePokemonButton');
     if (savePokemonButton) {
         savePokemonButton.addEventListener('click', function() {
-            const pokemonSelect = document.getElementById('pokemonSelect');
-            const selectedOptions = Array.from(pokemonSelect.selectedOptions).map(option => option.value);
-            saveUserPokemons(selectedOptions, messageDiv);
+            if (addedPokemons.length > 0) {
+                saveUserPokemons(addedPokemons, messageDiv);
+            } else {
+                console.error('Nenhum Pokémon adicionado.');
+            }
         });
     }
 }
@@ -253,7 +255,7 @@ function saveUserPokemons(pokemonSelection, messageDiv) {
     const username = localStorage.getItem('username');
     if (token && username) {
         fetch(`https://localhost:3000/user/${username}/pokemons`, { 
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
