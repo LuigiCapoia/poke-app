@@ -56,15 +56,12 @@ export class UserService {
     }
     return user;
   }
-  async removePokemonFromUser(
-    userId: string,
-    pokemonId: Types.ObjectId,
-  ): Promise<User> {
+  async deleteAllPokemonsFromUser(userId: string): Promise<User> {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new NotFoundException(`User with ID '${userId}' not found`);
     }
-    user.pokemons = user.pokemons.filter((pId) => !pId.equals(pokemonId));
+    user.pokemons = [];
     await user.save();
     return user;
   }
