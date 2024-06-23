@@ -1,17 +1,30 @@
-import { Controller, Post, Body, Delete, Param, UseGuards, NotFoundException, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Delete,
+  Param,
+  UseGuards,
+  NotFoundException,
+  Patch,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { User } from './schemas/user.schema'; // Certifique-se de importar o schema do usuário
+import { User } from './schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Types } from 'mongoose';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto.username, createUserDto.password);
+    return this.userService.create(
+      createUserDto.username,
+      createUserDto.password,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -19,7 +32,7 @@ export class UserController {
   async delete(@Param('username') username: string) {
     const user: User = await this.userService.findOne(username);
     if (user) {
-      return this.userService.deleteById(user._id.toString()); // Convertendo _id para string
+      return this.userService.deleteById(user._id.toString());
     } else {
       throw new NotFoundException(`User with username '${username}' not found`);
     }
@@ -27,7 +40,10 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':username')
-  async update(@Param('username') username: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param('username') username: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const user: User = await this.userService.findOne(username);
     if (user) {
       return this.userService.update(user._id.toString(), updateUserDto);
@@ -35,7 +51,19 @@ export class UserController {
       throw new NotFoundException(`User with username '${username}' not found`);
     }
   }
+  @Post(':userId/pokemons')
+  async addPokemon(
+    @Param('userId') userId: string,
+    @Body('pokemonId') pokemonId: Types.ObjectId,
+  ) {
+    return this.userService.addPokemonToUser(userId, pokemonId);
+  }
 
-
-
+  @Delete(':userId/pokemons/:pokemonId')
+  async removePokemon(
+    @Param('userId') userId: string,
+    @Param('pokemonId') pokemonId: Types.ObjectId,
+  ) {
+    return this.userService.removePokemonFromUser(userId, pokemonId);
+  }
 }
